@@ -35,7 +35,7 @@ while True:
         car_count += 1 #If the button is pressed, the number of cars increases
 
     # State transitions
-    if light == "red": #For the red light 
+    if light == "red": #When the light turns red  
         turn_on(led_red)
         turn_off(led_green)
         turn_off(led_yellow)
