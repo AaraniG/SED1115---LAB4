@@ -3,6 +3,7 @@ import time
 
 #CHAT GPT WAS USED FOR GUIDANCE IN THIS CODE
 
+#Initiating serial communication between the two Pico devices
 uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
 uart.init(bits=8, parity=None, stop=1)
 
@@ -10,19 +11,20 @@ uart.init(bits=8, parity=None, stop=1)
 led_red = Pin(18, Pin.OUT)
 led_green = Pin(19, Pin.OUT)
 led_yellow = Pin(20, Pin.OUT)
-sw4 = Pin(13, Pin.IN, Pin.PULL_DOWN) #button to indicate 
+sw4 = Pin(13, Pin.IN, Pin.PULL_DOWN) #using button number 4 on the pico
 
 # Initialize variables
 light = "red"  # Initial state
-car_count = 0
+car_count = 0 #Intial state of cars is 0
 
-# Define thresholds
+# Max number of cars (traffic) is 5
 too_many_cars_threshold = 5
 
-# Helper functions
+#Function to turn on led
 def turn_on(led):
     led.value(1)
 
+#Function to turn off led
 def turn_off(led):
     led.value(0)
 
@@ -30,33 +32,37 @@ def turn_off(led):
 while True:
     # Check button press to simulate car arrival
     if sw4.value() == 1:
-        car_count += 1
+        car_count += 1 #If the button is pressed, the number of cars increases
 
     # State transitions
-    if light == "red":
+    if light == "red": #For the red light 
         turn_on(led_red)
         turn_off(led_green)
         turn_off(led_yellow)
+    
         if car_count >= too_many_cars_threshold:
+            #If there are too many cars, swtich to the yellow ligh
             light = "yellow"
-            car_count = 0
+            car_count = 0 #Car count is being reseted
         else:
             time.sleep(5)  # Red state for 5 seconds
 
-    elif light == "yellow":
+    elif light == "yellow": #What happens when the light is yellow
         turn_off(led_red)
         turn_off(led_green)
         turn_on(led_yellow)
         time.sleep(3)  # Yellow state for 3 seconds
-        state = "green"
+        light = "green" #Light is switched to green 
 
-    elif light == "green":
+    elif light == "green": #What happens when the light is green
         turn_off(led_red)
         turn_on(led_green)
         turn_off(led_yellow)
         if car_count >= too_many_cars_threshold:
+            #If there are too many cars change to yellow light 
             state = "yellow"
             car_count = 0
         else:
             time.sleep(5)  # Green state for 5 seconds
+
 
