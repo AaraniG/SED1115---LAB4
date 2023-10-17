@@ -1,0 +1,62 @@
+from machine import UART,Pin
+import time 
+
+#CHAT GPT WAS USED FOR GUIDANCE IN THIS CODE
+
+uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+uart.init(bits=8, parity=None, stop=1)
+
+# Define pin numbers for LEDs and the button
+led_red = Pin(18, Pin.OUT)
+led_green = Pin(19, Pin.OUT)
+led_yellow = Pin(20, Pin.OUT)
+sw4 = Pin(13, Pin.IN, Pin.PULL_DOWN) #button to indicate 
+
+# Initialize variables
+light = "red"  # Initial state
+car_count = 0
+
+# Define thresholds
+too_many_cars_threshold = 5
+
+# Helper functions
+def turn_on(led):
+    led.value(1)
+
+def turn_off(led):
+    led.value(0)
+
+# Main loop
+while True:
+    # Check button press to simulate car arrival
+    if sw4.value() == 1:
+        car_count += 1
+
+    # State transitions
+    if light == "red":
+        turn_on(led_red)
+        turn_off(led_green)
+        turn_off(led_yellow)
+        if car_count >= too_many_cars_threshold:
+            light = "yellow"
+            car_count = 0
+        else:
+            time.sleep(5)  # Red state for 5 seconds
+
+    elif light == "yellow":
+        turn_off(led_red)
+        turn_off(led_green)
+        turn_on(led_yellow)
+        time.sleep(3)  # Yellow state for 3 seconds
+        state = "green"
+
+    elif light == "green":
+        turn_off(led_red)
+        turn_on(led_green)
+        turn_off(led_yellow)
+        if car_count >= too_many_cars_threshold:
+            state = "yellow"
+            car_count = 0
+        else:
+            time.sleep(5)  # Green state for 5 seconds
+
