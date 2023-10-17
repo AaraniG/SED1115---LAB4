@@ -33,9 +33,13 @@ while True:
     # Check button press to simulate car arrival
     if sw4.value() == 1:
         car_count += 1 #If the button is pressed, the number of cars increases
+        if light == "red":
+            light = "green"
+        elif light == "green":
+            light = "yellow"
 
     # State transitions
-    if light == "red": #When the light turns red  
+    if light == "red": #For the red light 
         turn_on(led_red)
         turn_off(led_green)
         turn_off(led_yellow)
@@ -60,7 +64,7 @@ while True:
         turn_off(led_yellow)
         if car_count >= too_many_cars_threshold:
             #If there are too many cars change to yellow light 
-            state = "yellow"
+            light = "yellow"
             car_count = 0
         else:
             time.sleep(5)  # Green state for 5 seconds
